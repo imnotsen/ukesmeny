@@ -1,4 +1,5 @@
 import { ComboboxDemo } from "@/components/composite/ingredient-combobox";
+import PageLayout from "@/components/layout/page-layout";
 import { supabase } from "@/utils/supabase/supabase";
 
 export default async function IngredientsPage() {
@@ -19,8 +20,8 @@ export default async function IngredientsPage() {
   }));
 
   return (
-    <>
+    <PageLayout>
       <ComboboxDemo foodItems={uniqueCategories ?? []} />
-    </>
+    </PageLayout>
   );
 }
