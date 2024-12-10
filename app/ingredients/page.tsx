@@ -3,8 +3,8 @@ import PageLayout from "@/components/layout/page-layout";
 import { supabase } from "@/utils/supabase/supabase";
 
 export default async function IngredientsPage() {
-  const { data: food_items, error } = await supabase
-    .from("food_items")
+  const { data: ingredients, error } = await supabase
+    .from("ingredients")
     .select("*");
 
   if (error) {
@@ -13,7 +13,7 @@ export default async function IngredientsPage() {
   }
 
   const uniqueCategories = Array.from(
-    new Set(food_items?.map((item) => item.category))
+    new Set(ingredients?.map((item) => item.category))
   ).map((category) => ({
     value: category,
     label: category,

@@ -16,10 +16,20 @@ export default function LoginPage() {
     <PageLayout>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email:</label>
-        <Input id="email" name="email" type="email" required />
+        <Input className="mb-1" id="email" name="email" type="email" required />
         <label htmlFor="password">Password:</label>
-        <Input id="password" name="password" type="password" required />
-        <Button type="submit">Log in</Button>
+        <Input
+          className="mb-2"
+          id="password"
+          name="password"
+          type="password"
+          required
+        />
+        <div className="flex justify-center">
+          <Button className="mb-1 mx-auto" type="submit">
+            Submit
+          </Button>
+        </div>
       </form>
     </PageLayout>
   );
