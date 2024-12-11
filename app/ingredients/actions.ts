@@ -2,11 +2,10 @@
 
 import { normalizeString } from "@/utils/string-helpers";
 import { createServerClient } from '@supabase/ssr';
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { cookies } from 'next/headers';
 import { Ingredient } from "./types";
 
-// Helper function to create Supabase client
 const createClient = () => {
   const cookieStore = cookies();
   
@@ -29,6 +28,37 @@ const createClient = () => {
       },
     }
   )
+}
+
+// Cache the ingredients fetch for 1 hour
+const getCachedIngredients = unstable_cache(
+  async () => {
+    const supabase = createClient();
+    const { data: ingredients, error } = await supabase
+      .from("ingredients")
+      .select("*");
+
+    if (error) {
+      console.error('Error fetching ingredients', error);
+      return [];
+    }
+
+    return ingredients as Ingredient[] || [];
+  },
+  ['ingredients-cache'],
+  {
+    revalidate: 3600,
+    tags: ['ingredients']
+  }
+);
+
+export async function fetchIngredients(): Promise<Ingredient[]> {
+  try {
+    return await getCachedIngredients();
+  } catch (error) {
+    console.error('Unexpected Fetch Error:', error);
+    return [];
+  }
 }
 
 export async function addIngredient(formData: FormData): Promise<{
@@ -87,29 +117,10 @@ export async function addIngredient(formData: FormData): Promise<{
     }
 
     revalidatePath('/ingredients');
+    
     return { data: data as Ingredient[] };
   } catch (error) {
     console.error('Unexpected Error:', error);
     return { error: 'An unexpected error occurred' };
-  }
-}
-
-export async function fetchIngredients(): Promise<Ingredient[]> {
-  try {
-    const supabase = createClient();
-
-    const { data: ingredients, error } = await supabase
-      .from("ingredients")
-      .select("*");
-
-    if (error) {
-      console.error('Error fetching ingredients', error);
-      return [];
-    }
-
-    return ingredients as Ingredient[] || [];
-  } catch (error) {
-    console.error('Unexpected Fetch Error:', error);
-    return [];
   }
 }
