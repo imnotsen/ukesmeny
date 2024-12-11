@@ -19,18 +19,27 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-type food_items = {
+type ComboboxItem = {
   value: string;
   label: string;
 };
 
-type ComboboxOption = {
-  foodItems: food_items[];
+type ComboboxProps<T extends ComboboxItem> = {
+  items: T[];
+  placeholder: string;
+  label: string;
+  value: string | null;
+  onValueChange: (value: string) => void;
 };
 
-export function ComboboxDemo({ foodItems }: ComboboxOption) {
+export function Combobox<T extends ComboboxItem>({
+  items,
+  placeholder,
+  label,
+  value,
+  onValueChange,
+}: ComboboxProps<T>) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,24 +50,22 @@ export function ComboboxDemo({ foodItems }: ComboboxOption) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? foodItems.find((item) => item.value === value)?.label
-            : "Velg matvare..."}
+          {value ? items.find((item) => item.value === value)?.label : label}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Søk i matvarer..." />
+          <CommandInput placeholder={placeholder} />
           <CommandList>
-            <CommandEmpty>Kunne ikke finne matvarer.</CommandEmpty>
+            <CommandEmpty>Kunne ikke finne elementer.</CommandEmpty>
             <CommandGroup>
-              {foodItems?.map((item) => (
+              {items?.map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    onValueChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
                 >

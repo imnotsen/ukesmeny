@@ -1,27 +1,27 @@
-import { ComboboxDemo } from "@/components/composite/ingredient-combobox";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PageLayout from "@/components/layout/page-layout";
-import { supabase } from "@/utils/supabase/supabase";
+import { fetchIngredients } from "./actions";
+import IngredientsPageClient from "./ingredients-client";
 
 export default async function IngredientsPage() {
-  const { data: ingredients, error } = await supabase
-    .from("ingredients")
-    .select("*");
+  console.log("Server Page - Fetching Ingredients");
 
-  if (error) {
-    console.error("Error fetching food items", error);
-    return null;
-  }
+  const ingredients = await fetchIngredients();
+  console.log("Server Page - Fetched Ingredients:", ingredients);
 
+  // Generate unique categories
   const uniqueCategories = Array.from(
-    new Set(ingredients?.map((item) => item.category))
+    new Set(ingredients?.map((item: any) => item.category))
   ).map((category) => ({
     value: category,
     label: category,
   }));
 
+  console.log("Server Page - Unique Categories:", uniqueCategories);
+
   return (
     <PageLayout>
-      <ComboboxDemo foodItems={uniqueCategories ?? []} />
+      <IngredientsPageClient categories={uniqueCategories} />
     </PageLayout>
   );
 }
