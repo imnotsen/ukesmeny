@@ -9,7 +9,6 @@ export default async function IngredientsPage() {
   const ingredients = await fetchIngredients();
   console.log("Server Page - Fetched Ingredients:", ingredients);
 
-  // Generate unique categories
   const uniqueCategories = Array.from(
     new Set(ingredients?.map((item: any) => item.category))
   ).map((category) => ({
@@ -21,7 +20,10 @@ export default async function IngredientsPage() {
 
   return (
     <PageLayout>
-      <IngredientsPageClient categories={uniqueCategories} />
+      <IngredientsPageClient
+        categories={uniqueCategories}
+        ingredients={ingredients}
+      />
     </PageLayout>
   );
 }

@@ -1,19 +1,30 @@
-// ingredients-client.tsx
 "use client";
 
 import { Combobox } from "@/components/composite/combobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { normalizeString } from "@/utils/string-helpers";
 import { useState } from "react";
 import { toast } from "sonner";
 import { addIngredient } from "./actions";
-import { Category } from "./types";
+import { Category, Ingredient } from "./types";
 
 export default function IngredientsPageClient({
   categories,
+  ingredients,
 }: {
   categories: Category[];
+  ingredients: Ingredient[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [ingredientName, setIngredientName] = useState("");
@@ -78,16 +89,15 @@ export default function IngredientsPageClient({
   };
 
   return (
-    <div className="space-y-4">
-      <Combobox
-        items={categories}
-        placeholder="Velg matvaretype"
-        label="Matvaretype"
-        value={selectedCategory}
-        onValueChange={setSelectedCategory}
-      />
-
-      <div className="flex space-x-2">
+    <div className="flex gap-16">
+      <div className="space-y-4 w-64">
+        <Combobox
+          items={categories}
+          placeholder="Velg matvaretype"
+          label="Matvaretype"
+          value={selectedCategory}
+          onValueChange={setSelectedCategory}
+        />
         <Input
           placeholder="Legg til matvare"
           value={ingredientName}
@@ -98,6 +108,30 @@ export default function IngredientsPageClient({
         <Button onClick={handleSubmit} disabled={isSubmitting}>
           {isSubmitting ? "Legger til..." : "Legg til"}
         </Button>
+      </div>
+      <div className="flex-1">
+        <ScrollArea className="h-[500px] w-[250px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+                  Ingrediens
+                </TableHead>
+                <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+                  Kategori
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ingredients.map((ingredient) => (
+                <TableRow key={ingredient.name}>
+                  <TableCell>{ingredient.name}</TableCell>
+                  <TableCell>{ingredient.category}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </div>
     </div>
   );
