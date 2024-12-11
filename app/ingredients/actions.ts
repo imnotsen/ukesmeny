@@ -6,31 +6,37 @@ import { revalidatePath } from "next/cache";
 import { cookies } from 'next/headers';
 import { Ingredient } from "./types";
 
+// Helper function to create Supabase client
+const createClient = () => {
+  const cookieStore = cookies();
+  
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => {
+          return cookieStore.getAll().map((cookie) => ({
+            name: cookie.name,
+            value: cookie.value,
+          }))
+        },
+        setAll: (cookiesList) => {
+          cookiesList.map((cookie) => {
+            cookieStore.set(cookie.name, cookie.value, cookie.options)
+          })
+        },
+      },
+    }
+  )
+}
+
 export async function addIngredient(formData: FormData): Promise<{
   data?: Ingredient[];
   error?: string;
 }> {
   try {
-    const cookieStore = cookies();
-    
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: any) {
-            cookieStore.set(name, value, options)
-          },
-          remove(name: string, options: any) {
-            cookieStore.set(name, '', options)
-          }
-        }
-      }
-    );
-
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -38,7 +44,6 @@ export async function addIngredient(formData: FormData): Promise<{
       return { error: 'You must be logged in to add ingredients' };
     }
 
-    // Rest of your function remains the same
     const rawName = formData.get('name');
     const category = formData.get('category');
 
@@ -91,24 +96,7 @@ export async function addIngredient(formData: FormData): Promise<{
 
 export async function fetchIngredients(): Promise<Ingredient[]> {
   try {
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: any) {
-            cookieStore.set(name, value, options)
-          },
-          remove(name: string, options: any) {
-            cookieStore.set(name, '', options)
-          }
-        }
-      }
-    );
+    const supabase = createClient();
 
     const { data: ingredients, error } = await supabase
       .from("ingredients")
