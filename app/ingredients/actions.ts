@@ -1,26 +1,47 @@
 'use server'
 
+import { CACHE_TAGS, CACHE_TIMES, createCacheKey } from '@/utils/cache-helpers';
 import { normalizeString } from "@/utils/string-helpers";
-import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
+import { createClient } from '@/utils/supabase/server';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { Ingredient } from "./types";
+
+const fetchIngredientsFromDB = async (supabase: SupabaseClient) => {
+  try {
+    const { data: ingredients, error } = await supabase
+      .from("ingredients")
+      .select("*")
+
+    if (error) {
+      console.error('Error fetching ingredients:', error)
+      return []
+    }
+
+    return ingredients as Ingredient[]
+  } catch (error) {
+    console.error('Database fetch error:', error)
+    return []
+  }
+}
+
+const getCachedIngredients = unstable_cache(
+  async (supabase: SupabaseClient) => fetchIngredientsFromDB(supabase),
+  [createCacheKey('all-ingredients')],
+  {
+    revalidate: CACHE_TIMES.day,
+    tags: [CACHE_TAGS.ingredients]
+  }
+)
 
 export async function fetchIngredients(): Promise<Ingredient[]> {
   try {
-    const supabase = createClient();
-    const { data: ingredients, error } = await supabase
-      .from("ingredients")
-      .select("*");
-
-    if (error) {
-      console.error('Error fetching ingredients', error);
-      return [];
-    }
-
-    return ingredients as Ingredient[] || [];
+    const supabase = createClient()
+    return await getCachedIngredients(supabase)
   } catch (error) {
-    console.error('Unexpected Fetch Error:', error);
-    return [];
+    console.error('Cache fetch error:', error)
+    const supabase = createClient()
+    return fetchIngredientsFromDB(supabase)
   }
 }
 
@@ -51,20 +72,14 @@ export async function addIngredient(formData: FormData): Promise<{
       return { error: 'Ingredient name cannot be empty or just whitespace' };
     }
 
-    const { data: existingIngredient, error: searchError } = await supabase
+    const { data: existingIngredients } = await supabase
       .from('ingredients')
-      .select('name, category')
-      .ilike('name', name)
-      .single();
+      .select('name')
+      .ilike('name', name);
 
-    if (searchError && searchError.code !== 'PGRST116') { 
-      console.error('Supabase Search Error:', searchError);
-      return { error: searchError.message };
-    }
-
-    if (existingIngredient) {
+    if (existingIngredients && existingIngredients.length > 0) {
       return { 
-        error: `Ingredient "${name}" already exists in category "${existingIngredient.category}"` 
+        error: `Ingredient "${name}" already exists` 
       };
     }
 
@@ -86,6 +101,7 @@ export async function addIngredient(formData: FormData): Promise<{
     }
 
     revalidatePath('/ingredients');
+    revalidateTag(CACHE_TAGS.ingredients);
     
     return { data: data as Ingredient[] };
   } catch (error) {
