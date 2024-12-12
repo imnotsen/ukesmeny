@@ -59,7 +59,7 @@ export default function Header() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle>Menu</DrawerTitle>
+                <DrawerTitle>Meny</DrawerTitle>
               </DrawerHeader>
               <div className="flex flex-col gap-4 p-4">
                 <NavigationMenu className="flex flex-col gap-2">

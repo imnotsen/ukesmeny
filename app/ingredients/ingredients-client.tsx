@@ -92,7 +92,7 @@ export default function IngredientsPageClient({
       <div className="space-y-4 w-full md:w-64">
         <Combobox
           items={categories}
-          placeholder="Velg matvaretype"
+          placeholder="Finn matvaretype"
           label="Matvaretype"
           value={selectedCategory}
           onValueChange={setSelectedCategory}

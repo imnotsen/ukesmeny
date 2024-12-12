@@ -1,10 +1,14 @@
+// app/recipes/page.tsx
 import PageLayout from "@/components/layout/page-layout";
-import { Button } from "@/components/ui/button";
+import { fetchIngredients } from "../ingredients/actions";
+import RecipePageClient from "./recipe-client";
 
-export default function RecipesPage() {
+export default async function RecipePage() {
+  const ingredients = await fetchIngredients();
+
   return (
     <PageLayout>
-      <Button variant="default">Add to cart</Button>
+      <RecipePageClient ingredients={ingredients} />
     </PageLayout>
   );
 }
