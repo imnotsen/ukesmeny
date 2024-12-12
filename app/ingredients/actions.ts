@@ -1,34 +1,9 @@
 'use server'
 
 import { normalizeString } from "@/utils/string-helpers";
-import { createServerClient } from '@supabase/ssr';
+import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cookies } from 'next/headers';
 import { Ingredient } from "./types";
-
-const createClient = () => {
-  const cookieStore = cookies();
-  
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => {
-          return cookieStore.getAll().map((cookie) => ({
-            name: cookie.name,
-            value: cookie.value,
-          }))
-        },
-        setAll: (cookiesList) => {
-          cookiesList.map((cookie) => {
-            cookieStore.set(cookie.name, cookie.value, cookie.options)
-          })
-        },
-      },
-    }
-  )
-}
 
 export async function fetchIngredients(): Promise<Ingredient[]> {
   try {
