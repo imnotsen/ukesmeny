@@ -26,7 +26,7 @@ export default function Header() {
     <>
       <NavigationMenuItem className={navigationMenuTriggerStyle()}>
         <Link href="/" legacyBehavior passHref>
-          <NavigationMenuLink>Home</NavigationMenuLink>
+          <NavigationMenuLink>Forside</NavigationMenuLink>
         </Link>
       </NavigationMenuItem>
       <NavigationMenuItem className={navigationMenuTriggerStyle()}>
