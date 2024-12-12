@@ -76,14 +76,20 @@ export async function addIngredient(formData: FormData): Promise<{
       return { error: 'Ingredient name cannot be empty or just whitespace' };
     }
 
-    const { data: existingIngredients } = await supabase
+    const { data: existingIngredient, error: searchError } = await supabase
       .from('ingredients')
-      .select('name')
-      .ilike('name', name);
+      .select('name, category')
+      .ilike('name', name)
+      .single();
 
-    if (existingIngredients && existingIngredients.length > 0) {
+    if (searchError && searchError.code !== 'PGRST116') { 
+      console.error('Supabase Search Error:', searchError);
+      return { error: searchError.message };
+    }
+
+    if (existingIngredient) {
       return { 
-        error: `Ingredient "${name}" already exists` 
+        error: `Ingredient "${name}" already exists in category "${existingIngredient.category}"` 
       };
     }
 
