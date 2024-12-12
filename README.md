@@ -6,12 +6,6 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -29,8 +23,12 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Project
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is made to handle weekly planning of meals, as well as give the user a detailed shopping-list based on the ingredients coming from the recipes planned for said week.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project is written in React(Next.js), with Typescript & TailwindCSS - Reasoning for this is that I wanted to learn Next.js  having only used client side React & CSS/SASS previously.
+
+Components are used from Shadcn(https://ui.shadcn.com/) as this gives me the control to handle each component as I want to and not overload the node.modules.
+
+All rights reserved for Sebastian Ness.
