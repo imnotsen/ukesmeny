@@ -1,4 +1,5 @@
-// app/recipes/page.tsx
+export const dynamic = "force-dynamic";
+
 import PageLayout from "@/components/layout/page-layout";
 import { fetchIngredients } from "../ingredients/actions";
 import RecipePageClient from "./recipe-client";
