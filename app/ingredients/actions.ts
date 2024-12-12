@@ -2,7 +2,7 @@
 
 import { normalizeString } from "@/utils/string-helpers";
 import { createServerClient } from '@supabase/ssr';
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { cookies } from 'next/headers';
 import { Ingredient } from "./types";
 
@@ -30,9 +30,8 @@ const createClient = () => {
   )
 }
 
-// Cache the ingredients fetch for 1 hour
-const getCachedIngredients = unstable_cache(
-  async () => {
+export async function fetchIngredients(): Promise<Ingredient[]> {
+  try {
     const supabase = createClient();
     const { data: ingredients, error } = await supabase
       .from("ingredients")
@@ -44,17 +43,6 @@ const getCachedIngredients = unstable_cache(
     }
 
     return ingredients as Ingredient[] || [];
-  },
-  ['ingredients-cache'],
-  {
-    revalidate: 3600,
-    tags: ['ingredients']
-  }
-);
-
-export async function fetchIngredients(): Promise<Ingredient[]> {
-  try {
-    return await getCachedIngredients();
   } catch (error) {
     console.error('Unexpected Fetch Error:', error);
     return [];
