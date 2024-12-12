@@ -1,4 +1,3 @@
-// page.tsx
 export const dynamic = "force-dynamic";
 
 import PageLayout from "@/components/layout/page-layout";

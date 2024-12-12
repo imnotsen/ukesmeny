@@ -6,6 +6,7 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
+  navigationMenuTriggerStyle,
 } from "../ui/navigation-menu";
 import { ModeToggle } from "../ui/toggle-darkmode";
 
@@ -19,22 +20,22 @@ export default function Header() {
       <div className="mr-4 hidden md:flex">
         {shouldShowMenu && (
           <NavigationMenu className="flex items-center gap-4 text-sm xl:gap-6">
-            <NavigationMenuItem>
+            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink>Home</NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
               <Link href="/ingredients" legacyBehavior passHref>
                 <NavigationMenuLink>Ingredienser</NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
               <Link href="/recipes" legacyBehavior passHref>
                 <NavigationMenuLink>Oppskrifter</NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
               <Link href="/shoppinglist" legacyBehavior passHref>
                 <NavigationMenuLink>Handleliste</NavigationMenuLink>
               </Link>

@@ -88,8 +88,8 @@ export default function IngredientsPageClient({
   };
 
   return (
-    <div className="flex gap-16">
-      <div className="space-y-4 w-64">
+    <div className="flex flex-col md:flex-row gap-8 w-full">
+      <div className="space-y-4 w-full md:w-64">
         <Combobox
           items={categories}
           placeholder="Velg matvaretype"
@@ -104,12 +104,16 @@ export default function IngredientsPageClient({
           name="name"
           disabled={isSubmitting}
         />
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
+        <Button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="w-full md:w-auto"
+        >
           {isSubmitting ? "Legger til..." : "Legg til"}
         </Button>
       </div>
-      <div className="flex-1">
-        <ScrollArea className="h-[500px] w-[250px]">
+      <div className="flex-1 min-w-0">
+        <ScrollArea className="h-[500px] w-full">
           <Table>
             <TableHeader>
               <TableRow>
