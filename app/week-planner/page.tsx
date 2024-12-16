@@ -1,9 +1,13 @@
 import PageLayout from "@/components/layout/page-layout";
+import { fetchRecipes } from "./actions";
+import WeeklyPlanner from "./weekly-client";
 
-export default function WeekPlannerPage() {
+export default async function WeekPlannerPage() {
+  const recipes = await fetchRecipes();
+
   return (
     <PageLayout>
-      <h1 className="text-4xl font-bold text-center">Ukesplanlegger</h1>
+      <WeeklyPlanner recipes={recipes} />
     </PageLayout>
   );
 }

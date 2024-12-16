@@ -1,4 +1,3 @@
-// app/recipes/types.ts
 import { Ingredient } from "../ingredients/types";
 
 export type Recipe = {
