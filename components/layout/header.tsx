@@ -30,6 +30,16 @@ export default function Header() {
         </Link>
       </NavigationMenuItem>
       <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+        <Link href="/shopping-list" legacyBehavior passHref>
+          <NavigationMenuLink>Handleliste</NavigationMenuLink>
+        </Link>
+      </NavigationMenuItem>
+      <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+        <Link href="/week-planner" legacyBehavior passHref>
+          <NavigationMenuLink>Ukesplanlegger</NavigationMenuLink>
+        </Link>
+      </NavigationMenuItem>
+      <NavigationMenuItem className={navigationMenuTriggerStyle()}>
         <Link href="/ingredients" legacyBehavior passHref>
           <NavigationMenuLink>Ingredienser</NavigationMenuLink>
         </Link>
@@ -37,11 +47,6 @@ export default function Header() {
       <NavigationMenuItem className={navigationMenuTriggerStyle()}>
         <Link href="/recipes" legacyBehavior passHref>
           <NavigationMenuLink>Oppskrifter</NavigationMenuLink>
-        </Link>
-      </NavigationMenuItem>
-      <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-        <Link href="/shoppinglist" legacyBehavior passHref>
-          <NavigationMenuLink>Handleliste</NavigationMenuLink>
         </Link>
       </NavigationMenuItem>
     </>

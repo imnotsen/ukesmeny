@@ -9,7 +9,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
   return (
     <>
       <Header />
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-65px)] min-w-screen p-4 pb-5 gap-8 sm:p-12 font-[family-name:var(--font-geist-sans)]">
+      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(90vh-65px)] min-w-screen p-4 pb-5 gap-8 sm:p-12 font-[family-name:var(--font-geist-sans)] h-90svh">
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           {children}
         </main>

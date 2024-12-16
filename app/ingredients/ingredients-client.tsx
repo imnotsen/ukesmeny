@@ -88,54 +88,57 @@ export default function IngredientsPageClient({
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 w-full">
-      <div className="space-y-4 w-full md:w-64">
-        <Combobox
-          items={categories}
-          placeholder="Finn matvaretype"
-          label="Matvaretype"
-          value={selectedCategory}
-          onValueChange={setSelectedCategory}
-        />
-        <Input
-          placeholder="Legg til matvare"
-          value={ingredientName}
-          onChange={(e) => setIngredientName(e.target.value)}
-          name="name"
-          disabled={isSubmitting}
-        />
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full md:w-auto"
-        >
-          {isSubmitting ? "Legger til..." : "Legg til"}
-        </Button>
-      </div>
-      <div className="flex-1 min-w-0">
-        <ScrollArea className="h-[500px] w-full">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
-                  Ingrediens
-                </TableHead>
-                <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
-                  Kategori
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ingredients.map((ingredient) => (
-                <TableRow key={ingredient.name}>
-                  <TableCell>{ingredient.name}</TableCell>
-                  <TableCell>{ingredient.category}</TableCell>
+    <>
+      <h1 className="text-2xl font-bold">Legg til Matvare</h1>
+      <div className="flex flex-col md:flex-row gap-8 w-full">
+        <div className="space-y-4 w-full md:w-64">
+          <Combobox
+            items={categories}
+            placeholder="Finn matvaretype"
+            label="Matvaretype"
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+          />
+          <Input
+            placeholder="Legg til matvare"
+            value={ingredientName}
+            onChange={(e) => setIngredientName(e.target.value)}
+            name="name"
+            disabled={isSubmitting}
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full md:w-auto"
+          >
+            {isSubmitting ? "Legger til..." : "Legg til"}
+          </Button>
+        </div>
+        <div className="flex-1 min-w-0">
+          <ScrollArea className="h-[500px] w-full">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+                    Ingrediens
+                  </TableHead>
+                  <TableHead className="sticky top-0 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:border-border">
+                    Kategori
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+              </TableHeader>
+              <TableBody>
+                {ingredients.map((ingredient) => (
+                  <TableRow key={ingredient.name}>
+                    <TableCell>{ingredient.name}</TableCell>
+                    <TableCell>{ingredient.category}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
