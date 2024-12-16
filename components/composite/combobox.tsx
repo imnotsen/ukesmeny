@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 type ComboboxItem = {
   value: string;
   label: string;
+  searchValue?: string;
 };
 
 type ComboboxProps<T extends ComboboxItem> = {
@@ -42,6 +43,20 @@ export function Combobox<T extends ComboboxItem>({
   className,
 }: ComboboxProps<T>) {
   const [open, setOpen] = React.useState(false);
+
+  const handleSelect = React.useCallback(
+    (currentValue: string) => {
+      const selectedItem = items.find(
+        (item) => (item.searchValue || item.label) === currentValue
+      );
+
+      if (selectedItem) {
+        onValueChange(selectedItem.value);
+      }
+      setOpen(false);
+    },
+    [items, onValueChange]
+  );
 
   return (
     <div className={className}>
@@ -66,11 +81,8 @@ export function Combobox<T extends ComboboxItem>({
                 {items?.map((item) => (
                   <CommandItem
                     key={item.value}
-                    value={item.value}
-                    onSelect={(currentValue) => {
-                      onValueChange(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                    }}
+                    value={item.searchValue || item.label}
+                    onSelect={handleSelect}
                   >
                     <Check
                       className={cn(

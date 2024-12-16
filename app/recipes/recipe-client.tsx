@@ -25,7 +25,7 @@ const MEASUREMENTS = [
   { value: "dl", label: "Desiliter" },
   { value: "l", label: "Liter" },
   { value: "stk", label: "Stykk" },
-  { value: "fd", label: "Fed" },
+  { value: "fd", label: "Fedd" },
   { value: "ss", label: "Spiseskje" },
   { value: "ts", label: "Teskje" },
   { value: "hf", label: "Håndfull" },
@@ -152,6 +152,7 @@ export default function RecipePageClient({
   const ingredientOptions = ingredients.map((ing) => ({
     value: ing.id.toString(),
     label: ing.name,
+    // searchValue: ing.name,
   }));
 
   const measurementOptions = MEASUREMENTS.map((m) => ({
@@ -190,7 +191,6 @@ export default function RecipePageClient({
               <div className="flex-1 space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
                 <div className="w-full">
                   <Combobox
-                    key={`ingredient-${input.id}`}
                     items={ingredientOptions}
                     placeholder="Velg ingrediens"
                     label="Ingrediens"
