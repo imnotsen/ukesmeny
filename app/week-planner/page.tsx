@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import PageLayout from "@/components/layout/page-layout";
 import { fetchRecipes } from "./actions";
 import WeeklyPlanner from "./weekly-client";
