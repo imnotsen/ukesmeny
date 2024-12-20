@@ -6,16 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Minus, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { Recipe } from "../recipes/types";
-
-type DayPlan = {
-  id: string;
-  recipe: Recipe;
-  servings: number;
-};
-
-type WeekPlan = {
-  [key: string]: DayPlan[];
-};
+import { WeekPlan } from "./types";
 
 const DAYS_OF_WEEK = [
   "Mandag",
@@ -162,6 +153,13 @@ export default function WeeklyPlanner({ recipes }: { recipes: Recipe[] }) {
             </CardContent>
           </Card>
         ))}
+        {/* <Button
+          size="sm"
+          className="w-full"
+          onClick={() => handleAddToShoppingList()}
+        >
+          Legg til i handleliste
+        </Button> */}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 'use server'
 
+import { normalizeToBaseUnit } from "@/utils/measurement-convertion";
 import { normalizeString } from "@/utils/string-helpers";
 import { createClient } from '@/utils/supabase/server';
 import { Recipe } from './types';
@@ -86,12 +87,15 @@ export async function addRecipe(formData: FormData): Promise<{
       return { error: recipeError.message };
     }
 
-    const ingredientsToInsert = parsedData.ingredients.map(ing => ({
-      recipe_id: recipe.id,
-      ingredient_id: ing.ingredientId,
-      amount: ing.amount,
-      measurement: ing.measurement,
-    }));
+    const ingredientsToInsert = parsedData.ingredients.map(ing => {
+      const normalized = normalizeToBaseUnit(ing.amount, ing.measurement);
+      return {
+        recipe_id: recipe.id,
+        ingredient_id: ing.ingredientId,
+        amount: normalized.value,
+        measurement: normalized.unit,
+      };
+    });
 
     const { error: ingredientsError } = await supabase
       .from('recipe_ingredients')
