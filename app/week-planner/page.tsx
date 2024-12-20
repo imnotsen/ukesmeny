@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import PageLayout from "@/components/layout/page-layout";
 import { endOfWeek, format, startOfWeek } from "date-fns";
 import { fetchRecipes, getPlannedMeals } from "./actions";
