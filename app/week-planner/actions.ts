@@ -134,6 +134,32 @@ export async function addPlannedMeal(formData: FormData): Promise<{
       return { error: 'An unexpected error occurred' };
     }
   }
+
+  export async function updatePlannedMeal(
+    id: number,
+    servings: number
+  ): Promise<{
+    success?: boolean;
+    error?: string;
+  }> {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('week_planner')
+        .update({ servings })
+        .eq('id', id);
+  
+      if (error) {
+        console.error('Update Error:', error);
+        return { error: error.message };
+      }
+  
+      return { success: true };
+    } catch (error) {
+      console.error('Unexpected Error:', error);
+      return { error: 'An unexpected error occurred' };
+    }
+  }
   
   export async function removePlannedMeal(id: number): Promise<{
     success?: boolean;

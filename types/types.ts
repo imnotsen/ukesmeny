@@ -13,6 +13,10 @@ export type WeekPlannerEntry = {
   recipe?: Recipe;
 };
 
+export type DayPlan = {
+  [key: string]: WeekPlannerEntry[];
+  };
+
 export type ShoppingListItem = {
   id: number;
   user_id: string;
