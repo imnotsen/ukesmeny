@@ -17,24 +17,24 @@ export type DayPlan = {
   [key: string]: WeekPlannerEntry[];
   };
 
-export type ShoppingListItem = {
-  id: number;
-  user_id: string;
-  ingredient_id: number;
-  amount: number;
-  measurement: string;
-  is_checked: boolean;
-  created_at: string;
-  ingredient?: Ingredient;
-};
-
 export type DateRange = {
   startDate: string;
   endDate: string;
 };
 
-export type CalculatedShoppingItem = {
+export interface ShoppingListItem {
+  id: number;
   ingredient_id: number;
+  amount: number;
+  measurement: string;
+  is_checked: boolean;
+  ingredient: Ingredient;
+}
+
+export interface CalculatedShoppingItem {
+  ingredient_id: number;
+  ingredient_name: string;
+  category: string;
   total_amount: number;
   measurement: string;
-};
+}

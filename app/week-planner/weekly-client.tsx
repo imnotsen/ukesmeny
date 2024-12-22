@@ -1,13 +1,12 @@
+// weekly-client.tsx
 "use client";
 
 import { Combobox } from "@/components/composite/combobox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DayPlan, WeekPlannerEntry } from "@/types/types";
-import { addDays, format, startOfWeek } from "date-fns";
-import { nb } from "date-fns/locale";
 import { Minus, Plus, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Recipe } from "../recipes/types";
 import {
@@ -25,6 +24,7 @@ const DAYS_OF_WEEK = [
   "Lørdag",
   "Søndag",
 ];
+
 type WeeklyPlannerProps = {
   recipes: Recipe[];
   initialPlannedMeals: WeekPlannerEntry[];
@@ -36,16 +36,10 @@ export default function WeeklyPlanner({
 }: WeeklyPlannerProps) {
   const [weekPlan, setWeekPlan] = useState<DayPlan>({});
 
-  const currentWeekStart = useMemo(
-    () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-    []
-  );
-
   useEffect(() => {
     const initialPlan: DayPlan = {};
-    DAYS_OF_WEEK.forEach((_, index) => {
-      const date = format(addDays(currentWeekStart, index), "yyyy-MM-dd");
-      initialPlan[date] = [];
+    DAYS_OF_WEEK.forEach((day) => {
+      initialPlan[day] = [];
     });
     initialPlannedMeals.forEach((meal) => {
       if (meal.planned_date in initialPlan) {
@@ -53,7 +47,7 @@ export default function WeeklyPlanner({
       }
     });
     setWeekPlan(initialPlan);
-  }, [currentWeekStart, initialPlannedMeals]);
+  }, [initialPlannedMeals]);
 
   const recipeItems = recipes.map((recipe) => ({
     value: recipe.id.toString(),
@@ -61,23 +55,25 @@ export default function WeeklyPlanner({
     searchValue: recipe.name,
   }));
 
-  const handleAddRecipe = async (date: string, id: string) => {
+  const handleAddRecipe = async (day: string, id: string) => {
     if (!id) return;
 
     const recipe = recipes.find((r) => r.id.toString() === id);
     if (!recipe) return;
 
     const tempId = Date.now();
+    const initialServings = 2;
+
     setWeekPlan((prev) => {
       const newPlan = { ...prev };
-      newPlan[date] = [
-        ...(prev[date] || []),
+      newPlan[day] = [
+        ...(prev[day] || []),
         {
           id: tempId,
           recipe_id: recipe.id,
           recipe: recipe,
-          planned_date: date,
-          servings: recipe.servings,
+          planned_date: day,
+          servings: initialServings,
         } as WeekPlannerEntry,
       ];
       return newPlan;
@@ -86,15 +82,15 @@ export default function WeeklyPlanner({
     try {
       const formData = new FormData();
       formData.append("recipe_id", id);
-      formData.append("planned_date", date);
-      formData.append("servings", recipe.servings.toString());
+      formData.append("planned_date", day);
+      formData.append("servings", initialServings.toString());
 
       const result = await addPlannedMeal(formData);
 
       if (result.error) {
         setWeekPlan((prev) => {
           const newPlan = { ...prev };
-          newPlan[date] = prev[date].filter((entry) => entry.id !== tempId);
+          newPlan[day] = prev[day].filter((entry) => entry.id !== tempId);
           return newPlan;
         });
         toast.error("Kunne ikke legge til oppskrift", {
@@ -103,7 +99,7 @@ export default function WeeklyPlanner({
       } else if (result.data) {
         setWeekPlan((prev) => {
           const newPlan = { ...prev };
-          newPlan[date] = prev[date].map((entry) =>
+          newPlan[day] = prev[day].map((entry) =>
             entry.id === tempId ? (result.data as WeekPlannerEntry) : entry
           );
           return newPlan;
@@ -113,7 +109,7 @@ export default function WeeklyPlanner({
       console.error(error);
       setWeekPlan((prev) => {
         const newPlan = { ...prev };
-        newPlan[date] = prev[date].filter((entry) => entry.id !== tempId);
+        newPlan[day] = prev[day].filter((entry) => entry.id !== tempId);
         return newPlan;
       });
       toast.error("En feil oppstod");
@@ -163,12 +159,9 @@ export default function WeeklyPlanner({
     }
   };
 
-  const handleRemoveRecipe = async (date: string, entryId: number) => {
+  const handleRemoveRecipe = async (day: string, entryId: number) => {
     try {
-      console.log("Attempting to remove recipe with ID:", entryId);
-
       const result = await removePlannedMeal(entryId);
-      console.log("Remove result:", result);
 
       if (result.error) {
         toast.error("Kunne ikke fjerne oppskrift", {
@@ -179,13 +172,11 @@ export default function WeeklyPlanner({
 
       setWeekPlan((prev) => {
         const newPlan = { ...prev };
-        newPlan[date] = prev[date].filter((entry) => entry.id !== entryId);
+        newPlan[day] = prev[day].filter((entry) => entry.id !== entryId);
         return newPlan;
       });
       toast.success("Oppskrift fjernet");
     } catch (error) {
-      console.error("Error removing recipe:", error);
-
       console.error(error);
       toast.error("En feil oppstod");
     }
@@ -194,76 +185,69 @@ export default function WeeklyPlanner({
   return (
     <div className="w-full max-w-6xl">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {DAYS_OF_WEEK.map((day, index) => {
-          const date = format(addDays(currentWeekStart, index), "yyyy-MM-dd");
-          return (
-            <Card key={day} className="w-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">
-                  {format(addDays(currentWeekStart, index), "EEEE d. MMM", {
-                    locale: nb,
-                  })}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Combobox
-                  items={recipeItems}
-                  placeholder="Søk etter oppskrift"
-                  label="Oppskrift"
-                  value={""}
-                  onValueChange={(id) => handleAddRecipe(date, id)}
-                />
-                {weekPlan[date]?.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="flex flex-col bg-muted p-2 rounded-md gap-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">
-                        {entry.recipe?.name}
+        {DAYS_OF_WEEK.map((day) => (
+          <Card key={day} className="w-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">{day}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Combobox
+                items={recipeItems}
+                placeholder="Søk etter oppskrift"
+                label="Oppskrift"
+                value={""}
+                onValueChange={(id) => handleAddRecipe(day, id)}
+              />
+              {weekPlan[day]?.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex flex-col bg-muted p-2 rounded-md gap-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">
+                      {entry.recipe?.name}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveRecipe(day, entry.id)}
+                      className="h-6 w-6"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      Porsjoner:
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleUpdateServings(day, entry, -1)}
+                        className="h-6 w-6"
+                        disabled={entry.servings <= 1}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="text-sm w-4 text-center">
+                        {entry.servings}
                       </span>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
-                        onClick={() => handleRemoveRecipe(date, entry.id)}
+                        onClick={() => handleUpdateServings(day, entry, 1)}
                         className="h-6 w-6"
                       >
-                        <X className="h-4 w-4" />
+                        <Plus className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">
-                        Porsjoner:
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleUpdateServings(date, entry, -1)}
-                          className="h-6 w-6"
-                          disabled={entry.servings <= 1}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="text-sm w-4 text-center">
-                          {entry.servings}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleUpdateServings(date, entry, 1)}
-                          className="h-6 w-6"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          );
-        })}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

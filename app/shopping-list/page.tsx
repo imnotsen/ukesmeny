@@ -1,10 +1,20 @@
-import PageLayout from "@/components/layout/page-layout";
-import { Button } from "@/components/ui/button";
+export const dynamic = "force-dynamic";
 
-export default function ShoppingListPage() {
+import PageLayout from "@/components/layout/page-layout";
+import { getShoppingList } from "./actions";
+import ShoppingListClient from "./shopping-list-client";
+
+export default async function ShoppingListPage() {
+  const { data: shoppingList = [], error: fetchError } =
+    await getShoppingList();
+
+  if (fetchError) {
+    console.error("Error fetching shopping list:", fetchError);
+  }
+
   return (
     <PageLayout>
-      <Button variant="default">Add to cart</Button>
+      <ShoppingListClient initialItems={shoppingList} />
     </PageLayout>
   );
 }
