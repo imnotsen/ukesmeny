@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ShoppingListItem } from "@/types/types";
 import { formatMeasurement } from "@/utils/measurement-convertion";
+import { getMeasurementLabel } from "@/utils/measurements";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -96,7 +97,6 @@ export default function ShoppingListClient({
           description: result.error,
         });
       } else if (result.data) {
-        // TypeScript now knows result.data is a ShoppingListItem
         setItems((currentItems) => {
           return [...currentItems, result.data!];
         });
@@ -164,7 +164,10 @@ export default function ShoppingListClient({
                       item.is_checked ? "text-muted-foreground" : ""
                     } ${pendingItems.has(item.id) ? "opacity-50" : ""}`}
                   >
-                    {formatMeasurement(item.amount, item.measurement)}
+                    {formatMeasurement(
+                      item.amount,
+                      getMeasurementLabel(item.measurement)
+                    )}
                   </span>
                 </div>
               ))}

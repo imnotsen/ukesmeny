@@ -1,11 +1,17 @@
-// weekly-client.tsx
 "use client";
-
 import { Combobox } from "@/components/composite/combobox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { DayPlan, WeekPlannerEntry } from "@/types/types";
-import { Minus, Plus, X } from "lucide-react";
+import { getMeasurementLabel } from "@/utils/measurements";
+import { Minus, Plus, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Recipe } from "../recipes/types";
@@ -35,6 +41,7 @@ export default function WeeklyPlanner({
   initialPlannedMeals,
 }: WeeklyPlannerProps) {
   const [weekPlan, setWeekPlan] = useState<DayPlan>({});
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   useEffect(() => {
     const initialPlan: DayPlan = {};
@@ -183,72 +190,128 @@ export default function WeeklyPlanner({
   };
 
   return (
-    <div className="w-full max-w-6xl">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {DAYS_OF_WEEK.map((day) => (
-          <Card key={day} className="w-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">{day}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Combobox
-                items={recipeItems}
-                placeholder="Søk etter oppskrift"
-                label="Oppskrift"
-                value={""}
-                onValueChange={(id) => handleAddRecipe(day, id)}
-              />
-              {weekPlan[day]?.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex flex-col bg-muted p-2 rounded-md gap-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">
-                      {entry.recipe?.name}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveRecipe(day, entry.id)}
-                      className="h-6 w-6"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Porsjoner:
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleUpdateServings(day, entry, -1)}
-                        className="h-6 w-6"
-                        disabled={entry.servings <= 1}
+    <>
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {DAYS_OF_WEEK.map((day) => (
+            <Card key={day} className="w-full">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">{day}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Combobox
+                  items={recipeItems}
+                  placeholder="Søk etter oppskrift"
+                  label="Oppskrift"
+                  value={""}
+                  onValueChange={(id) => handleAddRecipe(day, id)}
+                />
+                {weekPlan[day]?.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex flex-col bg-muted p-2 rounded-md gap-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => {
+                          if (entry.recipe) {
+                            setSelectedRecipe(entry.recipe);
+                          }
+                        }}
+                        className="text-sm font-medium hover:text-blue-600 text-left"
                       >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="text-sm w-4 text-center">
-                        {entry.servings}
-                      </span>
+                        {entry.recipe?.name}
+                      </button>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
-                        onClick={() => handleUpdateServings(day, entry, 1)}
+                        onClick={() => handleRemoveRecipe(day, entry.id)}
                         className="h-6 w-6"
                       >
-                        <Plus className="h-3 w-3" />
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Porsjoner:
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleUpdateServings(day, entry, -1)}
+                          className="h-6 w-6"
+                          disabled={entry.servings <= 1}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="text-sm w-4 text-center">
+                          {entry.servings}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleUpdateServings(day, entry, 1)}
+                          className="h-6 w-6"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <Dialog
+        open={!!selectedRecipe}
+        onOpenChange={() => setSelectedRecipe(null)}
+      >
+        <DialogContent className="max-w-2xl bg-[#0C0D10] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-normal">
+              {selectedRecipe?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[80vh]">
+            {selectedRecipe && (
+              <div className="p-4 space-y-8">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Users className="w-5 h-5" />
+                  <span className="text-lg">
+                    {selectedRecipe.servings} porsjoner
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-normal">Ingredienser</h2>
+                  <div className="space-y-2 text-gray-400">
+                    {selectedRecipe.recipe_ingredients?.map(
+                      (recipeIngredient) => (
+                        <div key={recipeIngredient.id}>
+                          {recipeIngredient.amount}{" "}
+                          {getMeasurementLabel(recipeIngredient.measurement)}{" "}
+                          {recipeIngredient.ingredient.name}
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-normal">Fremgangsmåte</h2>
+                  <div className="text-gray-400 whitespace-pre-wrap leading-relaxed">
+                    {selectedRecipe.instructions}
+                  </div>
+                </div>
+              </div>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

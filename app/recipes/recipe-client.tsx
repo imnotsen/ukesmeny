@@ -4,6 +4,7 @@ import { Combobox } from "@/components/composite/combobox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { measurementOptions } from "@/utils/measurements";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,24 +17,6 @@ type IngredientInput = {
   amount: string;
   measurement: string;
 };
-
-const MEASUREMENTS = [
-  { value: "g", label: "Gram" },
-  { value: "kg", label: "Kilogram" },
-  { value: "ml", label: "Milliliter" },
-  { value: "cl", label: "Centiliter" },
-  { value: "dl", label: "Desiliter" },
-  { value: "l", label: "Liter" },
-  { value: "stk", label: "Stykk" },
-  { value: "fd", label: "Fedd" },
-  { value: "ss", label: "Spiseskje" },
-  { value: "ts", label: "Teskje" },
-  { value: "hf", label: "Håndfull" },
-  { value: "kl", label: "Klype" },
-  { value: "dsj", label: "Dæsj" },
-  { value: "skv", label: "Skvett" },
-  { value: "tsk", label: "Til smak" },
-];
 
 export default function RecipePageClient({
   ingredients,
@@ -152,12 +135,6 @@ export default function RecipePageClient({
   const ingredientOptions = ingredients.map((ing) => ({
     value: ing.id.toString(),
     label: ing.name,
-    // searchValue: ing.name,
-  }));
-
-  const measurementOptions = MEASUREMENTS.map((m) => ({
-    value: m.value,
-    label: m.label,
   }));
 
   return (
